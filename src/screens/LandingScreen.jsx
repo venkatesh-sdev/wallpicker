@@ -6,7 +6,7 @@ import { useNavigation } from '@react-navigation/native'
 const LandingScreen = () => {
   const { navigate } = useNavigation()
   return (
-    <ImageBackground source={bg} className="flex-1">
+    <ImageBackground source={bg} className="flex-1 bg-gray-900">
       <SafeAreaView className="flex-1">
         <View className="px-5 mt-24 flex-1">
           <Text className="text-xl text-white">Mobile</Text>
