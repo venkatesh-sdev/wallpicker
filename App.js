@@ -1,12 +1,25 @@
-import { StatusBar } from 'expo-status-bar';
-import { Text, View } from 'react-native';
+// In App.js in a new project
 
-export default function App() {
+import * as React from 'react';
+import { View, Text } from 'react-native';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { HomeScreen, Item, LandingScreen } from './src/screens';
+
+import 'react-native-url-polyfill/auto'
+
+const Stack = createNativeStackNavigator();
+
+function App() {
   return (
-    <View className="flex-1 justify-center items-center bg-blue-500">
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
+    <NavigationContainer>
+      <Stack.Navigator screenOptions={{ headerShown: false }} initialRouteName='LandingScreen'>
+        <Stack.Screen name="LandingScreen" component={LandingScreen} />
+        <Stack.Screen name="HomeScreen" component={HomeScreen} />
+        <Stack.Screen name="Item" component={Item} />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }
 
+export default App;
