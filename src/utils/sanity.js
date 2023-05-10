@@ -20,8 +20,13 @@ export const getCategory = async () => {
 export const getItems = async (id) => {
     const items = await client.fetch(`*[_type == "items" 
   &&
-  ${id} 
-  in categories[]->_id]`).then(data => data)
+  $id 
+  in categories[]->_id]`, { id }).then(data => data)
 
-  return items
+    return items
+}
+
+export const getItem = async (id) => {
+    const item = await client.fetch(`*[_type == "items" && _id==$id ][0]`,{id}).then(data => data)
+    return item
 }

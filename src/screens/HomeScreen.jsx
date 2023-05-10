@@ -3,15 +3,17 @@ import React, { useEffect, useState } from 'react'
 import { Entypo } from '@expo/vector-icons';
 import { } from 'react-native';
 import { MasonaryLayout } from '../components';
-import { getCategory } from '../utils/sanity'
+import { getCategory } from '../utils/sanity'   
 const HomeScreen = () => {
 
     const [category, setCategory] = useState(null)
 
-
     useEffect(() => {
-        getCategory().then(data => setCategory(data)).catch(err => alert(err))
+        getCategory()
+            .then(data => setCategory(data) )
+            .catch(err => alert(err))
     }, [])
+
     return (
         <View className="flex-1 bg-[#04020d]">
             <SafeAreaView>
@@ -22,7 +24,7 @@ const HomeScreen = () => {
 
                 <ScrollView className="w-full h-full px-4">
                     {
-                        category ? <MasonaryLayout data={category} /> : <ActivityIndicator color={'#FF005C'} size={"large"} />
+                        category ? <MasonaryLayout data={category} screen={"Items"} /> : <ActivityIndicator color={'#FF005C'} size={"large"} />
                     }
                 </ScrollView>
             </SafeAreaView>

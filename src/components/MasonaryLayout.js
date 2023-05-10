@@ -4,23 +4,23 @@ import MasonryList from "@react-native-seoul/masonry-list";
 import { useNavigation } from "@react-navigation/native";
 import { urlFor } from "../utils/sanity";
 
-const MasonaryLayout = ({ data }) => {
+const MasonaryLayout = ({ data, screen }) => {
   return (
     <MasonryList
       data={data}
       keyExtractor={(item) => item.id}
       numColumns={2}
       showsVerticalScrollIndicator={false}
-      renderItem={({ item }) => <CardItem data={item} />}
+      renderItem={({ item }) => <CardItem data={item} screen={screen} />}
     />
   );
 };
 
-const CardItem = ({ data }) => {
+const CardItem = ({ data, screen }) => {
   const { navigate } = useNavigation();
   return (
     <TouchableOpacity
-      onPress={() => navigate("Item", { param: data.id })}
+      onPress={() => navigate(screen, { param: data._id })}
       className="bg-[#121212] m-1 rounded-md relative overflow-hidden"
     >
       <Image

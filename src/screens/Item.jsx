@@ -6,17 +6,60 @@ import {
   Image,
   TouchableOpacity,
 } from "react-native";
-import React, { useState, Fragment } from "react";
+import React, { useState, Fragment, useEffect } from "react";
 import { Entypo, Ionicons } from "@expo/vector-icons";
-import { bg } from "../../assets";
 import { useNavigation } from "@react-navigation/native";
 import { LinearGradient } from "expo-linear-gradient";
+import { getItem, urlFor } from "../utils/sanity";
+
+import * as FileSystem from 'expo-file-system';
+import * as MediaLibrary from 'expo-media-library';
+import moment from 'moment';
 
 const Item = ({ route }) => {
   const { navigate } = useNavigation();
-  console.log(route.params.param);
-  const [isLoading, setIsLoading] = useState(false);
-  
+  const [item, setItem] = useState(null)
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    getItem(route.params.param).then(data => {
+      setItem(data);
+      setIsLoading(false)
+    }).catch(err => alert(err))
+  }, [])
+
+
+  const handleDownload = async (imageUrl) => {
+    let date = moment().format('YYYYMMDDhhmmss')
+    let fileUri = FileSystem.documentDirectory + `${date}.jpg`;
+    try {
+      const res = await FileSystem.downloadAsync(imageUrl.uri, fileUri)
+      saveFile(res.uri)
+    } catch (err) {
+      console.log("FS Err: ", err)
+    }
+  }
+
+  const saveFile = async (fileUri) => {
+    const { status } = await MediaLibrary.requestPermissionsAsync();
+    if (status === "granted") {
+      try {
+        const asset = await MediaLibrary.createAssetAsync(fileUri);
+        const album = await MediaLibrary.getAlbumAsync('Download');
+        if (album == null) {
+          await MediaLibrary.createAlbumAsync('Download', asset, false);
+          alert('Downloaded Successfully')
+        } else {
+          await MediaLibrary.addAssetsToAlbumAsync([asset], album, false);
+        }
+      } catch (err) {
+        console.log("Save err: ", err)
+      }
+    } else if (status === "denied") {
+      alert("please allow permissions to download")
+    }
+  }
+
   return (
     <View className="flex-1 bg-[#04020d] relative justify-center items-center">
       {isLoading ? (
@@ -27,7 +70,7 @@ const Item = ({ route }) => {
         <Fragment>
           <Image
             source={{
-              uri: "https://cdn.pixabay.com/photo/2018/03/01/06/53/outdoors-3189876_960_720.jpg",
+              uri: urlFor(item?.image).url(),
             }}
             className="w-full h-full object-cover"
           />
@@ -49,12 +92,12 @@ const Item = ({ route }) => {
             className="w-full h-full
            relative "
           >
-            <View className="justify-between items-center flex-row bg-[#0000007c] p-4 mx-8 absolute inset-x-0 bottom-36 rounded-lg">
+            <View className="justify-between items-center flex-row bg-[#3535357c] p-4 mx-8 absolute inset-x-0 bottom-36 rounded-lg">
               <View>
-                <Text className="text-2xl font-bold text-white">Kittens</Text>
-                <Text className="text-md text-white">Cute Kittens</Text>
+                <Text className="text-2xl font-bold text-white">{item?.title}</Text>
+                <Text className="text-md text-white">{item?.description}</Text>
               </View>
-              <TouchableOpacity>
+              <TouchableOpacity onPress={() => handleDownload({ uri: urlFor(item?.image).url() })}>
                 <Entypo name="thunder-cloud" size={34} color="white" />
               </TouchableOpacity>
             </View>
